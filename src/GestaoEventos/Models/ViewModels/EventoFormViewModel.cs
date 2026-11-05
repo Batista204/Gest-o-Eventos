@@ -23,6 +23,7 @@ public class EventoFormViewModel
     public string Local { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Informe a data do evento.")]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     [Display(Name = "Data do evento")]
     public DateOnly? DataEvento { get; set; }
 

@@ -25,17 +25,17 @@
 <div class="row">
     <div class="col-md-4 mb-3">
         <label asp-for="DataEvento" class="form-label"></label>
-        <input asp-for="DataEvento" class="form-control" />
+        <input asp-for="DataEvento" type="date" class="form-control" />
         <span asp-validation-for="DataEvento" class="text-danger"></span>
     </div>
     <div class="col-md-4 mb-3">
         <label asp-for="HoraInicio" class="form-label"></label>
-        <input asp-for="HoraInicio" class="form-control" />
+        <input asp-for="HoraInicio" type="time" class="form-control" />
         <span asp-validation-for="HoraInicio" class="text-danger"></span>
     </div>
     <div class="col-md-4 mb-3">
         <label asp-for="HoraFim" class="form-label"></label>
-        <input asp-for="HoraFim" class="form-control" />
+        <input asp-for="HoraFim" type="time" class="form-control" />
         <span asp-validation-for="HoraFim" class="text-danger"></span>
     </div>
 </div>
