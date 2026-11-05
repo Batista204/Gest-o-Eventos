@@ -29,7 +29,7 @@ public class AccountController : Controller
     public IActionResult Register()
     {
         if (User.Identity?.IsAuthenticated == true)
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Painel", new { area = "Participante" });
         return View();
     }
 
@@ -94,7 +94,7 @@ public class AccountController : Controller
                 usuario, model.Senha, model.LembrarMe, lockoutOnFailure: true);
 
             if (resultado.Succeeded)
-                return RedirecionarAposLogin(returnUrl);
+                return await RedirecionarAposLoginAsync(usuario, returnUrl);
 
             if (resultado.IsLockedOut)
             {
@@ -125,14 +125,18 @@ public class AccountController : Controller
 
     // ---------- Auxiliares ----------
 
-    private IActionResult RedirecionarAposLogin(string? returnUrl)
-    {
-        // Só aceita URLs locais, evitando redirecionamento para sites externos (open redirect)
-        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            return LocalRedirect(returnUrl);
+   private async Task<IActionResult> RedirecionarAposLoginAsync(Usuario usuario, string? returnUrl)
+{
+    // Só aceita URLs locais, evitando redirecionamento para sites externos (open redirect)
+    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        return LocalRedirect(returnUrl);
 
-        return RedirectToAction("Index", "Home");   // ajustado por perfil na etapa 2.4
-    }
+    // Sem destino específico, cada perfil vai para a sua área
+    if (await _userManager.IsInRoleAsync(usuario, Perfis.Admin))
+        return RedirectToAction("Index", "Painel", new { area = "Admin" });
+
+    return RedirectToAction("Index", "Painel", new { area = "Participante" });
+}
 
     // O Identity devolve mensagens em inglês; aqui traduzimos as mais comuns.
     private static string TraduzirErro(IdentityError erro) => erro.Code switch

@@ -54,6 +54,11 @@ app.UseAuthorization();    // verifica o que o usuário pode acessar
 app.MapStaticAssets();
 
 app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Painel}/{action=Index}/{id?}")
+    .WithStaticAssets();
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
