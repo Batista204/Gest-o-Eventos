@@ -1,0 +1,67 @@
+@model EventoFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<input asp-for="Id" type="hidden" />
+<input asp-for="RowVersion" type="hidden" />
+
+<div class="mb-3">
+    <label asp-for="Titulo" class="form-label"></label>
+    <input asp-for="Titulo" class="form-control" />
+    <span asp-validation-for="Titulo" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Descricao" class="form-label"></label>
+    <textarea asp-for="Descricao" class="form-control" rows="4"></textarea>
+    <span asp-validation-for="Descricao" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Local" class="form-label"></label>
+    <input asp-for="Local" class="form-control" />
+    <span asp-validation-for="Local" class="text-danger"></span>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <label asp-for="DataEvento" class="form-label"></label>
+        <input asp-for="DataEvento" class="form-control" />
+        <span asp-validation-for="DataEvento" class="text-danger"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="HoraInicio" class="form-label"></label>
+        <input asp-for="HoraInicio" class="form-control" />
+        <span asp-validation-for="HoraInicio" class="text-danger"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="HoraFim" class="form-label"></label>
+        <input asp-for="HoraFim" class="form-control" />
+        <span asp-validation-for="HoraFim" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="CargaHoraria" class="form-label"></label>
+        <input asp-for="CargaHoraria" type="number" step="0.5" min="0.5" class="form-control" />
+        <span asp-validation-for="CargaHoraria" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="LimiteVagas" class="form-label"></label>
+        <input asp-for="LimiteVagas" type="number" min="1" class="form-control" />
+        <span asp-validation-for="LimiteVagas" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="InicioInscricao" class="form-label"></label>
+        <input asp-for="InicioInscricao" class="form-control" />
+        <span asp-validation-for="InicioInscricao" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="FimInscricao" class="form-label"></label>
+        <input asp-for="FimInscricao" class="form-control" />
+        <span asp-validation-for="FimInscricao" class="text-danger"></span>
+    </div>
+</div>

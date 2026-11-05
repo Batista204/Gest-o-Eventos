@@ -1,0 +1,12 @@
+@model StatusEvento
+@{
+    var classe = Model switch
+    {
+        StatusEvento.Planejado => "text-bg-secondary",
+        StatusEvento.Aberto => "text-bg-success",
+        StatusEvento.Encerrado => "text-bg-dark",
+        StatusEvento.Cancelado => "text-bg-danger",
+        _ => "text-bg-light"
+    };
+}
+<span class="badge @classe">@Model</span>

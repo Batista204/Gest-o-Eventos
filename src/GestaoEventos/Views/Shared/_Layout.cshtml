@@ -35,6 +35,20 @@
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
+            @if (TempData["Sucesso"] is string mensagemSucesso)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @mensagemSucesso
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+            }
+            @if (TempData["Erro"] is string mensagemErro)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @mensagemErro
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+                </div>
+            }
         </main>
     </div>
 

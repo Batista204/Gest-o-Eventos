@@ -1,6 +1,10 @@
+using System.Globalization;
 using GestaoEventos.Data;
 using GestaoEventos.Models.Entities;
+using GestaoEventos.Services.Implementations;
+using GestaoEventos.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +41,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IEventoService, EventoService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -46,6 +52,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+var culturaFixa = CultureInfo.InvariantCulture;
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(culturaFixa),
+    SupportedCultures = new List<CultureInfo> { culturaFixa },
+    SupportedUICultures = new List<CultureInfo> { culturaFixa }
+});
 app.UseRouting();
 
 app.UseAuthentication();   // identifica quem é o usuário (deve vir antes da autorização)
