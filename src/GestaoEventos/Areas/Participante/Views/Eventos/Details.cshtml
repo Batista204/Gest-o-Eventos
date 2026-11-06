@@ -1,0 +1,61 @@
+@model EventoDisponivelDetalhesViewModel
+@{
+    ViewData["Title"] = Model.Titulo;
+}
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h3 mb-1">@Model.Titulo</h1>
+        <partial name="_StatusBadge" model="Model.Status" />
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">Voltar aos eventos</a>
+</div>
+
+<p>@Model.Descricao</p>
+
+<dl class="row">
+    <dt class="col-sm-3">Data</dt>
+    <dd class="col-sm-9">@Model.DataEvento.ToString("dd/MM/yyyy"), das @Model.HoraInicio.ToString("HH:mm") às @Model.HoraFim.ToString("HH:mm")</dd>
+
+    <dt class="col-sm-3">Local</dt>
+    <dd class="col-sm-9">@Model.Local</dd>
+
+    <dt class="col-sm-3">Carga horária</dt>
+    <dd class="col-sm-9">@Model.CargaHoraria.ToString("0.#", CultureInfo.GetCultureInfo("pt-BR")) hora(s)</dd>
+
+    <dt class="col-sm-3">Vagas</dt>
+    <dd class="col-sm-9">@Model.VagasOcupadas ocupadas de @Model.LimiteVagas</dd>
+
+    <dt class="col-sm-3">Inscrições</dt>
+    <dd class="col-sm-9">de @Model.InicioInscricao.ToString("dd/MM/yyyy HH:mm") até @Model.FimInscricao.ToString("dd/MM/yyyy HH:mm")</dd>
+</dl>
+
+<hr />
+
+@if (Model.JaInscrito)
+{
+    <div class="alert alert-primary">Você está inscrito neste evento.</div>
+
+    @if (Model.PodeCancelar)
+    {
+        <form asp-area="Participante" asp-controller="Inscricoes" asp-action="Cancelar"
+              asp-route-id="@Model.InscricaoId" method="post"
+              onsubmit="return confirm('Cancelar sua inscrição neste evento?');">
+            <button type="submit" class="btn btn-outline-danger">Cancelar inscrição</button>
+        </form>
+    }
+    else
+    {
+        <p class="text-muted">Não é mais possível cancelar esta inscrição.</p>
+    }
+}
+else if (Model.PodeInscrever)
+{
+    <form asp-action="Inscrever" asp-route-id="@Model.Id" method="post">
+        <button type="submit" class="btn btn-success">Inscrever-se</button>
+    </form>
+}
+else
+{
+    <div class="alert alert-warning">@Model.Aviso</div>
+}

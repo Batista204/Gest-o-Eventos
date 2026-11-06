@@ -21,7 +21,7 @@
     <dd class="col-sm-9">@Model.Local</dd>
 
     <dt class="col-sm-3">Carga horária</dt>
-    <dd class="col-sm-9">@Model.CargaHoraria.ToString("0.#") hora(s)</dd>
+    <dd class="col-sm-9">@Model.CargaHoraria.ToString("0.#", CultureInfo.GetCultureInfo("pt-BR")) hora(s)</dd>
 
     <dt class="col-sm-3">Vagas</dt>
     <dd class="col-sm-9">@Model.VagasOcupadas ocupadas de @Model.LimiteVagas</dd>

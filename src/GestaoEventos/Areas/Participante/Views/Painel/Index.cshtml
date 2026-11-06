@@ -4,3 +4,5 @@
 
 <h1 class="h3 mb-3">Meu painel</h1>
 <p>Olá, @User.Identity?.Name. Aqui você verá os eventos disponíveis, suas inscrições e seus certificados.</p>
+<a asp-area="Participante" asp-controller="Eventos" asp-action="Index" class="btn btn-primary">Ver eventos</a>
+<a asp-area="Participante" asp-controller="Inscricoes" asp-action="Index" class="btn btn-outline-primary">Minhas inscrições</a>

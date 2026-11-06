@@ -41,7 +41,8 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<IEventoService, EventoService>();
+builder.Services.AddScoped<IEventoService, EventoService>(); 
+builder.Services.AddScoped<IInscricaoService, InscricaoService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,61 @@
+@model List<MinhaInscricaoViewModel>
+@{
+    ViewData["Title"] = "Minhas inscrições";
+}
+
+<h1 class="h3 mb-4">Minhas inscrições</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Você ainda não se inscreveu em nenhum evento.
+        <a asp-controller="Eventos" asp-action="Index">Ver eventos disponíveis</a>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Evento</th>
+                    <th>Data</th>
+                    <th>Evento</th>
+                    <th>Minha inscrição</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Titulo<br /><small class="text-muted">@item.Local</small></td>
+                        <td>@item.DataEvento.ToString("dd/MM/yyyy") às @item.HoraInicio.ToString("HH:mm")</td>
+                        <td><partial name="_StatusBadge" model="item.StatusEvento" /></td>
+                        <td>
+                            @if (item.StatusInscricao == StatusInscricao.Ativa)
+                            {
+                                <span class="badge text-bg-primary">Ativa</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">Cancelada</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a asp-controller="Eventos" asp-action="Details" asp-route-id="@item.EventoId"
+                               class="btn btn-sm btn-outline-primary">Detalhes</a>
+                            @if (item.PodeCancelar)
+                            {
+                                <form asp-action="Cancelar" asp-route-id="@item.InscricaoId" method="post" class="d-inline"
+                                      onsubmit="return confirm('Cancelar sua inscrição neste evento?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
