@@ -34,19 +34,26 @@
 
 @if (Model.JaInscrito)
 {
-    <div class="alert alert-primary">Você está inscrito neste evento.</div>
-
-    @if (Model.PodeCancelar)
+    if (Model.Status == StatusEvento.Cancelado)
     {
-        <form asp-area="Participante" asp-controller="Inscricoes" asp-action="Cancelar"
-              asp-route-id="@Model.InscricaoId" method="post"
-              onsubmit="return confirm('Cancelar sua inscrição neste evento?');">
-            <button type="submit" class="btn btn-outline-danger">Cancelar inscrição</button>
-        </form>
+        <div class="alert alert-danger">Este evento foi cancelado. Sua inscrição não está mais válida.</div>
     }
     else
     {
-        <p class="text-muted">Não é mais possível cancelar esta inscrição.</p>
+        <div class="alert alert-primary">Você está inscrito neste evento.</div>
+
+        @if (Model.PodeCancelar)
+        {
+            <form asp-area="Participante" asp-controller="Inscricoes" asp-action="Cancelar"
+                  asp-route-id="@Model.InscricaoId" method="post"
+                  onsubmit="return confirm('Cancelar sua inscrição neste evento?');">
+                <button type="submit" class="btn btn-outline-danger">Cancelar inscrição</button>
+            </form>
+        }
+        else
+        {
+            <p class="text-muted">Não é mais possível cancelar esta inscrição.</p>
+        }
     }
 }
 else if (Model.PodeInscrever)
