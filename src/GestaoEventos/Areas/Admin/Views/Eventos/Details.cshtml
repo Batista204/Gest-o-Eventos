@@ -36,6 +36,8 @@
 <hr />
 
 <div class="d-flex flex-wrap gap-2">
+    <a asp-controller="Presenca" asp-action="Index" asp-route-id="@Model.Id" class="btn btn-primary">Inscritos e presença</a>
+
     @if (Model.PodeEditar)
     {
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Editar</a>

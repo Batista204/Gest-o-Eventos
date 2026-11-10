@@ -20,8 +20,9 @@ else
                 <tr>
                     <th>Evento</th>
                     <th>Data</th>
-                    <th>Evento</th>
+                    <th>Status do evento</th>
                     <th>Minha inscrição</th>
+                    <th>Presença</th>
                     <th></th>
                 </tr>
             </thead>
@@ -29,9 +30,16 @@ else
                 @foreach (var item in Model)
                 {
                     <tr>
+                        <!-- 1. Título e Local -->
                         <td>@item.Titulo<br /><small class="text-muted">@item.Local</small></td>
+    
+                        <!-- 2. Data -->
                         <td>@item.DataEvento.ToString("dd/MM/yyyy") às @item.HoraInicio.ToString("HH:mm")</td>
+    
+                        <!-- 3. Status do Evento -->
                         <td><partial name="_StatusBadge" model="item.StatusEvento" /></td>
+    
+                        <!-- 4. Status da Inscrição (Ativa ou Cancelada) -->
                         <td>
                             @if (item.StatusInscricao == StatusInscricao.Ativa)
                             {
@@ -42,13 +50,35 @@ else
                                 <span class="badge text-bg-secondary">Cancelada</span>
                             }
                         </td>
+
+                        <!-- 5. Presença (Recolocado na ordem correta) -->
+                        <td>
+                            @if (item.StatusInscricao == StatusInscricao.Cancelada)
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                            else if (item.Presente == true)
+                            {
+                                <span class="badge text-bg-success">Presente</span>
+                            }
+                            else if (item.Presente == false)
+                            {
+                                <span class="badge text-bg-danger">Ausente</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">Não registrada</span>
+                            }
+                        </td>
+
+                        <!-- 6. Ações/Botões (Sempre por último) -->
                         <td class="text-end">
                             <a asp-controller="Eventos" asp-action="Details" asp-route-id="@item.EventoId"
-                               class="btn btn-sm btn-outline-primary">Detalhes</a>
+                                class="btn btn-sm btn-outline-primary">Detalhes</a>
                             @if (item.PodeCancelar)
                             {
                                 <form asp-action="Cancelar" asp-route-id="@item.InscricaoId" method="post" class="d-inline"
-                                      onsubmit="return confirm('Cancelar sua inscrição neste evento?');">
+                                        onsubmit="return confirm('Cancelar sua inscrição neste evento?');">
                                     <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
                                 </form>
                             }

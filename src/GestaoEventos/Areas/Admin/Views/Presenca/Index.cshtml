@@ -1,0 +1,128 @@
+@model PresencaListaViewModel
+@{
+    ViewData["Title"] = "Inscritos e presença";
+}
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h3 mb-1">Inscritos e presença</h1>
+        <p class="mb-1">
+            @Model.Titulo - @Model.DataEvento.ToString("dd/MM/yyyy") às @Model.HoraInicio.ToString("HH:mm")
+        </p>
+        <partial name="_StatusBadge" model="Model.Status" />
+    </div>
+    <a asp-controller="Eventos" asp-action="Details" asp-route-id="@Model.EventoId"
+       class="btn btn-outline-secondary">Voltar ao evento</a>
+</div>
+
+<p class="mb-3">
+    <strong>@Model.TotalInscritos</strong> inscrito(s):
+    <span class="badge text-bg-success">@Model.Presentes presente(s)</span>
+    <span class="badge text-bg-danger">@Model.Ausentes ausente(s)</span>
+    <span class="badge text-bg-secondary">@Model.SemRegistro sem registro</span>
+</p>
+
+@if (!Model.PodeRegistrar)
+{
+    <div class="alert alert-warning">@Model.Aviso</div>
+}
+
+@if (!Model.Itens.Any())
+{
+    <div class="alert alert-info">Nenhum inscrito neste evento.</div>
+}
+else if (Model.PodeRegistrar)
+{
+    <form asp-action="Salvar" method="post">
+        <input type="hidden" name="eventoId" value="@Model.EventoId" />
+
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <button type="button" id="marcarTodos" class="btn btn-sm btn-outline-success">Marcar todos</button>
+            <button type="button" id="desmarcarTodos" class="btn btn-sm btn-outline-secondary">Desmarcar todos</button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Matrícula</th>
+                        <th>Presença</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Itens.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <input type="hidden" asp-for="Itens[i].InscricaoId" />
+                                @Model.Itens[i].Nome
+                            </td>
+                            <td>@Model.Itens[i].Email</td>
+                            <td>@(Model.Itens[i].Matricula ?? "-")</td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input asp-for="Itens[i].Presente" class="form-check-input presente-check" />
+                                    <label asp-for="Itens[i].Presente" class="form-check-label">Presente</label>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <p class="text-muted">Quem não estiver marcado como presente será salvo como ausente.</p>
+        <button type="submit" class="btn btn-primary">Salvar presenças</button>
+    </form>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Matrícula</th>
+                    <th>Presença</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Itens)
+                {
+                    <tr>
+                        <td>@item.Nome</td>
+                        <td>@item.Email</td>
+                        <td>@(item.Matricula ?? "-")</td>
+                        <td>
+                            @if (item.PresenteRegistrado == true)
+                            {
+                                <span class="badge text-bg-success">Presente</span>
+                            }
+                            else if (item.PresenteRegistrado == false)
+                            {
+                                <span class="badge text-bg-danger">Ausente</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">Sem registro</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function marcarTodos(valor) {
+            document.querySelectorAll('.presente-check').forEach(function (c) { c.checked = valor; });
+        }
+        document.getElementById('marcarTodos')?.addEventListener('click', function () { marcarTodos(true); });
+        document.getElementById('desmarcarTodos')?.addEventListener('click', function () { marcarTodos(false); });
+    </script>
+}

@@ -43,6 +43,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IEventoService, EventoService>(); 
 builder.Services.AddScoped<IInscricaoService, InscricaoService>();
+builder.Services.AddScoped<IPresencaService, PresencaService>();
 
 var app = builder.Build();
 

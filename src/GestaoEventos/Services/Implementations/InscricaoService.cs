@@ -95,7 +95,8 @@ public class InscricaoService : IInscricaoService
                 StatusEvento = i.Evento.Status,
                 StatusInscricao = i.Status,
                 DataInscricao = i.DataInscricao,
-                FimInscricao = i.Evento.FimInscricao
+                FimInscricao = i.Evento.FimInscricao,
+                Presente = i.Presenca == null ? (bool?)null : i.Presenca.Presente
             })
             .ToListAsync();
 
