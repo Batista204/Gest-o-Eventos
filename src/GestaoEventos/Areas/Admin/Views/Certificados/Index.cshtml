@@ -94,7 +94,17 @@ else
                                 <span class="badge text-bg-secondary">Não elegível</span>
                             }
                         </td>
-                        <td><code>@(item.Codigo ?? "-")</code></td>
+                        <td>
+                            @if (item.Codigo is not null)
+                            {
+                               <code>@item.Codigo</code>
+                                <a asp-action="Baixar" asp-route-id="@item.InscricaoId" class="btn btn-sm btn-outline-primary ms-2">PDF</a> 
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>

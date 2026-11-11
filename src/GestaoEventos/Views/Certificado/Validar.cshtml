@@ -1,0 +1,57 @@
+@model GestaoEventos.Models.ViewModels.CertificadoValidacaoViewModel
+@{
+    ViewData["Title"] = "Validar certificado";
+    var ptBr = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <h1 class="h3 mb-3">Validar certificado</h1>
+        <p class="text-muted">Informe o código de verificação que consta no rodapé do certificado.</p>
+
+        <form method="get" asp-action="Validar" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="codigo" value="@Model.Codigo" class="form-control"
+                       placeholder="XXXX-XXXX-XXXX" maxlength="30" autocomplete="off" />
+                <button type="submit" class="btn btn-primary">Validar</button>
+            </div>
+        </form>
+
+        @if (Model.Consultado)
+        {
+            if (Model.Encontrado)
+            {
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">Certificado válido</div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Participante</dt>
+                            <dd class="col-sm-8">@Model.Nome</dd>
+
+                            <dt class="col-sm-4">Evento</dt>
+                            <dd class="col-sm-8">@Model.Evento</dd>
+
+                            <dt class="col-sm-4">Realizado em</dt>
+                            <dd class="col-sm-8">@Model.DataEvento?.ToString("dd/MM/yyyy")</dd>
+
+                            <dt class="col-sm-4">Carga horária</dt>
+                            <dd class="col-sm-8">@Model.CargaHoraria?.ToString("0.#", ptBr) hora(s)</dd>
+
+                            <dt class="col-sm-4">Emitido em</dt>
+                            <dd class="col-sm-8">@Model.DataEmissao?.ToLocalTime().ToString("dd/MM/yyyy")</dd>
+
+                            <dt class="col-sm-4">Código</dt>
+                            <dd class="col-sm-8"><code>@Model.Codigo</code></dd>
+                        </dl>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger">
+                    Certificado não encontrado ou inválido. Confira o código digitado.
+                </div>
+            }
+        }
+    </div>
+</div>

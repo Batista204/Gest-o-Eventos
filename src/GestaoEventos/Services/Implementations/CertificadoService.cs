@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
 using GestaoEventos.Data;
 using GestaoEventos.Models.Entities;
@@ -5,6 +6,7 @@ using GestaoEventos.Models.Enums;
 using GestaoEventos.Models.ViewModels;
 using GestaoEventos.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace GestaoEventos.Services.Implementations;
 
@@ -14,6 +16,15 @@ public class CertificadoService : ICertificadoService
     private const string Alfabeto = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
     private readonly AppDbContext _db;
+    private readonly InstituicaoOptions _instituicao;
+    private readonly IWebHostEnvironment _env;
+
+    public CertificadoService(AppDbContext db, IOptions<InstituicaoOptions> instituicao, IWebHostEnvironment env)
+    {
+        _db = db;
+        _instituicao = instituicao.Value;
+        _env = env;
+    }
 
     public CertificadoService(AppDbContext db) => _db = db;
 
@@ -163,4 +174,101 @@ public class CertificadoService : ICertificadoService
 
         return new string(chars);
     }
+
+    // ---------- PDF (RF22 e RF23) ----------
+
+    // usuarioId = null: acesso do administrador. Preenchido: só o dono do certificado (RN33).
+    public async Task<CertificadoPdf?> GerarPdfAsync(int inscricaoId, string? usuarioId, string urlValidacao)
+    {
+        var consulta = _db.Certificados.AsNoTracking()
+            .Where(c => c.InscricaoId == inscricaoId
+                        && c.Valido
+                        && c.Inscricao.Status == StatusInscricao.Ativa
+                        && c.Inscricao.Evento.Status == StatusEvento.Encerrado
+                        && c.Inscricao.Evento.CertificadosLiberadosEm != null);
+
+        if (usuarioId is not null)
+            consulta = consulta.Where(c => c.Inscricao.UsuarioId == usuarioId);
+
+        var dados = await consulta
+            .Select(c => new DadosCertificado
+            {
+                Nome = c.Inscricao.Usuario.NomeCompleto,
+                Titulo = c.Inscricao.Evento.Titulo,
+                DataEvento = c.Inscricao.Evento.DataEvento,
+                CargaHoraria = c.Inscricao.Evento.CargaHoraria,
+                Codigo = c.CodigoVerificacao,
+                DataEmissao = c.DataEmissao
+            })
+            .FirstOrDefaultAsync();
+
+        if (dados is null)
+            return null;
+
+        var conteudo = CertificadoPdfGenerator.Gerar(dados, _instituicao, CarregarLogo(), urlValidacao);
+        return new CertificadoPdf(conteudo, $"certificado-{dados.Codigo}.pdf");
+    }
+
+    // ---------- Validação pública (RF24, RN34) ----------
+
+    public async Task<CertificadoValidacaoViewModel> ValidarAsync(string? codigoDigitado)
+    {
+        var resultado = new CertificadoValidacaoViewModel
+        {
+            Consultado = true,
+            Codigo = codigoDigitado is null ? null : codigoDigitado[..Math.Min(codigoDigitado.Length, 30)]
+        };
+
+        var codigo = NormalizarCodigo(codigoDigitado);
+        if (codigo is null)
+            return resultado;
+
+        var certificado = await _db.Certificados.AsNoTracking()
+            .Where(c => c.CodigoVerificacao == codigo
+                        && c.Valido
+                        && c.Inscricao.Status == StatusInscricao.Ativa
+                        && c.Inscricao.Evento.Status == StatusEvento.Encerrado)
+            .Select(c => new
+            {
+                Nome = c.Inscricao.Usuario.NomeCompleto,
+                Evento = c.Inscricao.Evento.Titulo,
+                c.Inscricao.Evento.DataEvento,
+                c.Inscricao.Evento.CargaHoraria,
+                c.DataEmissao
+            })
+            .FirstOrDefaultAsync();
+
+        // Inexistente e invalidado dão o mesmo resultado
+        if (certificado is null)
+            return resultado;
+
+        resultado.Encontrado = true;
+        resultado.Codigo = codigo;
+        resultado.Nome = certificado.Nome;
+        resultado.Evento = certificado.Evento;
+        resultado.DataEvento = certificado.DataEvento;
+        resultado.CargaHoraria = certificado.CargaHoraria;
+        resultado.DataEmissao = certificado.DataEmissao;
+        return resultado;
+    }
+
+    // Aceita minúsculas, espaços e código sem hífens; devolve XXXX-XXXX-XXXX ou null
+    private static string? NormalizarCodigo(string? entrada)
+    {
+        if (string.IsNullOrWhiteSpace(entrada) || entrada.Length > 40)
+            return null;
+
+        var limpo = new string(entrada.Where(char.IsLetterOrDigit).ToArray()).ToUpperInvariant();
+        if (limpo.Length != 12)
+            return null;
+
+        return $"{limpo[..4]}-{limpo[4..8]}-{limpo[8..]}";
+    }
+
+    private byte[]? CarregarLogo()
+    {
+        var caminho = Path.Combine(_env.ContentRootPath, "Assets", "logo-instituicao.png");
+        return File.Exists(caminho) ? File.ReadAllBytes(caminho) : null;
+    }
+    
 }

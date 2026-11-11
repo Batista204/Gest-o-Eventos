@@ -6,6 +6,10 @@ using GestaoEventos.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.RateLimiting;
+using GestaoEventos.Services;
+using Microsoft.AspNetCore.RateLimiting;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +50,32 @@ builder.Services.AddScoped<IInscricaoService, InscricaoService>();
 builder.Services.AddScoped<IPresencaService, PresencaService>();
 builder.Services.AddScoped<ICertificadoService, CertificadoService>();
 
+// Licença Community do QuestPDF (uso acadêmico); detalhes em docs/
+QuestPDF.Settings.License = LicenseType.Community;
+
+builder.Services.Configure<InstituicaoOptions>(builder.Configuration.GetSection("Instituicao"));
+
+// Limite de consultas na página pública de validação: 10 por minuto por IP
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (contexto, token) =>
+    {
+        contexto.HttpContext.Response.ContentType = "text/plain; charset=utf-8";
+        await contexto.HttpContext.Response.WriteAsync(
+            "Muitas tentativas. Aguarde um minuto e tente novamente.", token);
+    };
+    options.AddPolicy("validacao", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "desconhecido",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -63,6 +93,8 @@ app.UseRequestLocalization(new RequestLocalizationOptions
     SupportedUICultures = new List<CultureInfo> { culturaFixa }
 });
 app.UseRouting();
+
+app.UseRateLimiter();
 
 app.UseAuthentication();   // identifica quem é o usuário (deve vir antes da autorização)
 app.UseAuthorization();    // verifica o que o usuário pode acessar

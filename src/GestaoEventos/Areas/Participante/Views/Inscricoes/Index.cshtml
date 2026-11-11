@@ -84,6 +84,8 @@ else
                                     <span class="badge text-bg-success">Emitido</span>
                                     <br />
                                     <small class="text-muted">@item.CertificadoCodigo</small>
+                                    <br />
+                                    <a asp-area="Participante" asp-controller="Certificados" asp-action="Baixar" asp-route-id="@item.InscricaoId"class="btn btn-sm btn-outline-success mt-1">Baixar PDF</a>
                                 }
                                 else
                                 {

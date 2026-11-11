@@ -32,4 +32,12 @@ public class CertificadosController : Controller
 
         return RedirectToAction(nameof(Index), new { id });
     }
+
+    public async Task<IActionResult> Baixar(int id)
+    {
+        var urlValidacao = Url.Action("Validar", "Certificado", new { area = "" }, Request.Scheme)!;
+        var pdf = await _service.GerarPdfAsync(id, null, urlValidacao);
+
+        return pdf is null ? NotFound() : File(pdf.Conteudo, "application/pdf", pdf.NomeArquivo);
+    }
 }
