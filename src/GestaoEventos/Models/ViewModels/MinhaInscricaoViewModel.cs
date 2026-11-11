@@ -15,7 +15,8 @@ public class MinhaInscricaoViewModel
     public DateTime DataInscricao { get; set; }
     public DateTime FimInscricao { get; set; }
     public bool PodeCancelar { get; set; }
-
-    // null = presença ainda não registrada
     public bool? Presente { get; set; }
+    public bool CertificadosLiberados { get; set; }
+    public string? CertificadoCodigo { get; set; }
+    public bool CertificadoValido { get; set; }
 }

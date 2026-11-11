@@ -1,0 +1,103 @@
+@model CertificadoResumoViewModel
+@{
+    ViewData["Title"] = "Certificados";
+}
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h3 mb-1">Certificados</h1>
+        <p class="mb-1">
+            @Model.Titulo - @Model.DataEvento.ToString("dd/MM/yyyy") às @Model.HoraInicio.ToString("HH:mm")
+        </p>
+        <partial name="_StatusBadge" model="Model.Status" />
+    </div>
+    <a asp-controller="Eventos" asp-action="Details" asp-route-id="@Model.EventoId"
+       class="btn btn-outline-secondary">Voltar ao evento</a>
+</div>
+
+<p class="mb-3">
+    <strong>@Model.TotalInscritos</strong> inscrito(s):
+    <span class="badge text-bg-success">@Model.Elegiveis elegível(is)</span>
+    <span class="badge text-bg-secondary">@Model.NaoElegiveis não elegível(is)</span>
+    <span class="badge text-bg-primary">@Model.Emitidos certificado(s) emitido(s)</span>
+</p>
+
+@if (Model.LiberadosEm is not null)
+{
+    <div class="alert alert-success">
+        Certificados liberados em @Model.LiberadosEm.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm").
+    </div>
+}
+else if (Model.Aviso is not null)
+{
+    <div class="alert alert-warning">@Model.Aviso</div>
+}
+
+@if (Model.PodeLiberar)
+{
+    <form asp-action="Liberar" asp-route-id="@Model.EventoId" method="post" class="mb-3"
+          onsubmit="return confirm('Liberar os certificados dos participantes elegíveis? Isso só pode ser feito uma vez.');">
+        <button type="submit" class="btn btn-success">Liberar certificados (@Model.Elegiveis)</button>
+    </form>
+}
+
+@if (!Model.Itens.Any())
+{
+    <div class="alert alert-info">Nenhum inscrito neste evento.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Matrícula</th>
+                    <th>Presença</th>
+                    <th>Situação</th>
+                    <th>Código do certificado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Itens)
+                {
+                    <tr>
+                        <td>@item.Nome</td>
+                        <td>@item.Email</td>
+                        <td>@(item.Matricula ?? "-")</td>
+                        <td>
+                            @if (item.Presente == true)
+                            {
+                                <span class="badge text-bg-success">Presente</span>
+                            }
+                            else if (item.Presente == false)
+                            {
+                                <span class="badge text-bg-danger">Ausente</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">Sem registro</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.Codigo is not null)
+                            {
+                                <span class="badge text-bg-primary">Emitido</span>
+                            }
+                            else if (item.Elegivel)
+                            {
+                                <span class="badge text-bg-success">Elegível</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">Não elegível</span>
+                            }
+                        </td>
+                        <td><code>@(item.Codigo ?? "-")</code></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

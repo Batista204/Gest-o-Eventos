@@ -38,6 +38,11 @@
 <div class="d-flex flex-wrap gap-2">
     <a asp-controller="Presenca" asp-action="Index" asp-route-id="@Model.Id" class="btn btn-primary">Inscritos e presença</a>
 
+    @if (Model.Status == StatusEvento.Encerrado)
+    {
+        <a asp-controller="Certificados" asp-action="Index" asp-route-id="@Model.Id" class="btn btn-dark">Certificados</a>
+    }
+
     @if (Model.PodeEditar)
     {
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Editar</a>

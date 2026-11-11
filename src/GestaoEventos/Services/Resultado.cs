@@ -10,6 +10,9 @@ public class Resultado
     // Id do registro criado, quando aplicável
     public int? Id { get; set; }
 
+    // Quantidade de registros afetados, quando aplicável
+    public int Quantidade { get; set; }
+
     public static Resultado Ok(int? id = null) => new() { Id = id };
 
     public static Resultado Falha(string mensagem, string? campo = null)

@@ -23,6 +23,7 @@ else
                     <th>Status do evento</th>
                     <th>Minha inscrição</th>
                     <th>Presença</th>
+                    <th>Certificado</th>
                     <th></th>
                 </tr>
             </thead>
@@ -68,6 +69,34 @@ else
                             else
                             {
                                 <span class="badge text-bg-secondary">Não registrada</span>
+                            }
+                        </td>
+
+                        <td>
+                            @if (item.StatusInscricao == StatusInscricao.Cancelada || item.StatusEvento == StatusEvento.Cancelado)
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                            else if (item.CertificadosLiberados)
+                            {
+                                if (item.CertificadoCodigo is not null && item.CertificadoValido)
+                                {
+                                    <span class="badge text-bg-success">Emitido</span>
+                                    <br />
+                                    <small class="text-muted">@item.CertificadoCodigo</small>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Sem certificado</span>
+                                }
+                            }
+                            else if (item.StatusEvento == StatusEvento.Encerrado)
+                            {
+                                <span class="badge text-bg-secondary">Aguardando liberação</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
                             }
                         </td>
 
