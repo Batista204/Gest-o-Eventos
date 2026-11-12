@@ -37,6 +37,7 @@
 
 <div class="d-flex flex-wrap gap-2">
     <a asp-controller="Presenca" asp-action="Index" asp-route-id="@Model.Id" class="btn btn-primary">Inscritos e presença</a>
+    <a asp-controller="Relatorios" asp-action="Evento" asp-route-id="@Model.Id" class="btn btn-outline-primary">Relatório</a>
 
     @if (Model.Status == StatusEvento.Encerrado)
     {

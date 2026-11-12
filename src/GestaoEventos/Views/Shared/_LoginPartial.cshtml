@@ -6,29 +6,33 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item">
-           @if (User.IsInRole(Perfis.Admin))
-            {
-                <li class="nav-item">
-                    <a class="nav-link text-dark text-nowrap" asp-area="Admin" asp-controller="Eventos" asp-action="Index">Eventos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark text-nowrap" asp-area="Admin" asp-controller="Painel" asp-action="Index">Painel do Administrador</a>
-                </li>
-            }
-            else
-            {
-                <li class="nav-item">
-                    <a class="nav-link text-dark text-nowrap" asp-area="Participante" asp-controller="Eventos" asp-action="Index">Eventos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark text-nowrap" asp-area="Participante" asp-controller="Inscricoes" asp-action="Index">Minhas inscrições</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark text-nowrap" asp-area="Participante" asp-controller="Painel" asp-action="Index">Meu painel</a>
-                </li>
-            }
-        </li>
+        @if (User.IsInRole(Perfis.Admin))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark text-nowrap" asp-area="Admin" asp-controller="Eventos" asp-action="Index">Eventos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark text-nowrap" asp-area="Admin" asp-controller="Relatorios" asp-action="Index">Relatórios</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark text-nowrap" asp-area="Admin" asp-controller="Painel" asp-action="Index">Painel do Administrador</a>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark text-nowrap" asp-area="Participante" asp-controller="Eventos" asp-action="Index">Eventos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark text-nowrap" asp-area="Participante" asp-controller="Inscricoes" asp-action="Index">Minhas inscrições</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark text-nowrap" asp-area="Participante" asp-controller="Historico" asp-action="Index">Meu histórico</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark text-nowrap" asp-area="Participante" asp-controller="Painel" asp-action="Index">Meu painel</a>
+            </li>
+        }
 
         <li class="nav-item">
             <span class="nav-link text-dark text-nowrap">Olá, @User.Identity?.Name</span>

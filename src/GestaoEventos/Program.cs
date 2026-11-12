@@ -49,6 +49,7 @@ builder.Services.AddScoped<IEventoService, EventoService>();
 builder.Services.AddScoped<IInscricaoService, InscricaoService>();
 builder.Services.AddScoped<IPresencaService, PresencaService>();
 builder.Services.AddScoped<ICertificadoService, CertificadoService>();
+builder.Services.AddScoped<IRelatorioService, RelatorioService>();
 
 // Licença Community do QuestPDF (uso acadêmico); detalhes em docs/
 QuestPDF.Settings.License = LicenseType.Community;

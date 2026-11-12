@@ -1,0 +1,73 @@
+@model List<RelatorioEventoLinhaViewModel>
+@{
+    ViewData["Title"] = "Relatórios";
+    var filtro = ViewData["Filtro"] as StatusEvento?;
+}
+
+<h1 class="h3 mb-3">Relatório geral de eventos</h1>
+
+<div class="mb-3">
+    <a asp-action="Index" class="btn btn-sm @(filtro is null ? "btn-dark" : "btn-outline-dark")">Todos</a>
+    @foreach (var s in Enum.GetValues<StatusEvento>())
+    {
+        <a asp-action="Index" asp-route-status="@s"
+           class="btn btn-sm @(filtro == s ? "btn-dark" : "btn-outline-dark")">@s</a>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Nenhum evento encontrado.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Evento</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th class="text-end">Inscritos</th>
+                    <th class="text-end">Cancelados</th>
+                    <th class="text-end">Presentes</th>
+                    <th class="text-end">Ausentes</th>
+                    <th class="text-end">Frequência</th>
+                    <th class="text-end">Certificados</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Titulo</td>
+                        <td>@item.DataEvento.ToString("dd/MM/yyyy")</td>
+                        <td><partial name="_StatusBadge" model="item.Status" /></td>
+                        <td class="text-end">@item.InscritosAtivos / @item.LimiteVagas</td>
+                        <td class="text-end">@item.Cancelados</td>
+                        <td class="text-end">@item.Presentes</td>
+                        <td class="text-end">@item.Ausentes</td>
+                        <td class="text-end">@(item.TaxaPresenca is null ? "-" : item.TaxaPresenca.Value.ToString("0") + "%")</td>
+                        <td class="text-end">@item.CertificadosEmitidos</td>
+                        <td class="text-end">
+                            <a asp-action="Evento" asp-route-id="@item.EventoId" class="btn btn-sm btn-outline-primary">Detalhar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="table-light fw-bold">
+                    <td colspan="3">Total (@Model.Count evento(s))</td>
+                    <td class="text-end">@Model.Sum(i => i.InscritosAtivos)</td>
+                    <td class="text-end">@Model.Sum(i => i.Cancelados)</td>
+                    <td class="text-end">@Model.Sum(i => i.Presentes)</td>
+                    <td class="text-end">@Model.Sum(i => i.Ausentes)</td>
+                    <td></td>
+                    <td class="text-end">@Model.Sum(i => i.CertificadosEmitidos)</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}

@@ -1,0 +1,98 @@
+@model HistoricoViewModel
+@{
+    ViewData["Title"] = "Meu histórico";
+    var ptBr = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
+}
+
+<h1 class="h3 mb-4">Meu histórico de participação</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">@Model.EventosComPresenca</div>
+                <div class="text-muted">evento(s) com presença</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">@Model.CertificadosEmitidos</div>
+                <div class="text-muted">certificado(s) emitido(s)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6">@Model.HorasCertificadas.ToString("0.#", ptBr)</div>
+                <div class="text-muted">hora(s) certificada(s)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Itens.Any())
+{
+    <div class="alert alert-info">
+        Você ainda não tem eventos encerrados no seu histórico.
+        <a asp-controller="Inscricoes" asp-action="Index">Ver minhas inscrições</a>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Evento</th>
+                    <th>Data</th>
+                    <th>Carga horária</th>
+                    <th>Presença</th>
+                    <th>Certificado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Itens)
+                {
+                    <tr>
+                        <td>@item.Titulo<br /><small class="text-muted">@item.Local</small></td>
+                        <td>@item.DataEvento.ToString("dd/MM/yyyy")</td>
+                        <td>@item.CargaHoraria.ToString("0.#", ptBr) h</td>
+                        <td>
+                            @if (item.Presente == true)
+                            {
+                                <span class="badge text-bg-success">Presente</span>
+                            }
+                            else if (item.Presente == false)
+                            {
+                                <span class="badge text-bg-danger">Ausente</span>
+                            }
+                            else
+                            {
+                                <span class="badge text-bg-secondary">Não registrada</span>
+                            }
+                        </td>
+                        <td>
+                            @if (item.CertificadoCodigo is not null)
+                            {
+                                <span class="badge text-bg-success">Emitido</span>
+                                <a asp-controller="Certificados" asp-action="Baixar" asp-route-id="@item.InscricaoId"
+                                   class="btn btn-sm btn-outline-success ms-1">Baixar PDF</a>
+                            }
+                            else if (!item.CertificadosLiberados)
+                            {
+                                <span class="badge text-bg-secondary">Aguardando liberação</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Sem certificado</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -1,0 +1,74 @@
+@model RelatorioEventoDetalheViewModel
+@{
+    ViewData["Title"] = "Relatório do evento";
+    var ptBr = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
+}
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h3 mb-1">Relatório do evento</h1>
+        <h2 class="h5">@Model.Titulo</h2>
+        <partial name="_StatusBadge" model="Model.Status" />
+    </div>
+    <div class="d-print-none d-flex gap-2">
+        <button type="button" class="btn btn-outline-secondary" onclick="window.print()">Imprimir</button>
+        <a asp-action="Csv" asp-route-id="@Model.EventoId" class="btn btn-outline-success">Exportar CSV</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Voltar</a>
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Data</dt>
+    <dd class="col-sm-9">@Model.DataEvento.ToString("dd/MM/yyyy"), das @Model.HoraInicio.ToString("HH:mm") às @Model.HoraFim.ToString("HH:mm")</dd>
+
+    <dt class="col-sm-3">Local</dt>
+    <dd class="col-sm-9">@Model.Local</dd>
+
+    <dt class="col-sm-3">Carga horária</dt>
+    <dd class="col-sm-9">@Model.CargaHoraria.ToString("0.#", ptBr) hora(s)</dd>
+
+    <dt class="col-sm-3">Vagas</dt>
+    <dd class="col-sm-9">@Model.TotalInscritos inscrito(s) de @Model.LimiteVagas (@Model.Cancelados cancelamento(s))</dd>
+</dl>
+
+<p>
+    <span class="badge text-bg-success">@Model.Presentes presente(s)</span>
+    <span class="badge text-bg-danger">@Model.Ausentes ausente(s)</span>
+    <span class="badge text-bg-secondary">@Model.SemRegistro sem registro</span>
+    <span class="badge text-bg-primary">@Model.Emitidos certificado(s) emitido(s)</span>
+</p>
+
+@if (!Model.Itens.Any())
+{
+    <div class="alert alert-info">Nenhum inscrito neste evento.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Matrícula</th>
+                    <th>Presença</th>
+                    <th>Certificado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Itens)
+                {
+                    <tr>
+                        <td>@item.Nome</td>
+                        <td>@item.Email</td>
+                        <td>@(item.Matricula ?? "-")</td>
+                        <td>@(item.Presente switch { true => "Presente", false => "Ausente", _ => "Sem registro" })</td>
+                        <td>@(item.Codigo ?? "-")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<p class="text-muted small">Relatório gerado em @DateTime.Now.ToString("dd/MM/yyyy HH:mm").</p>
