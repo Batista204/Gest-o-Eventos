@@ -1,8 +1,31 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using GestaoEventos.Models.Constants
+@{
+    ViewData["Title"] = "Início";
+    var logado = User.Identity?.IsAuthenticated == true;
+    var admin = User.IsInRole(Perfis.Admin);
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="py-5 text-center">
+    <h1 class="display-5 mb-3">Gestão de Eventos Acadêmicos</h1>
+    <p class="lead text-muted mb-4">
+        Inscrições, controle de presença e emissão de certificados em um só lugar.
+    </p>
+
+    @if (!logado)
+    {
+        <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg me-2">Entrar</a>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary btn-lg me-2">Criar conta</a>
+        <a asp-controller="Certificado" asp-action="Validar" class="btn btn-outline-secondary btn-lg">Validar certificado</a>
+    }
+    else if (admin)
+    {
+        <a asp-area="Admin" asp-controller="Eventos" asp-action="Index" class="btn btn-primary btn-lg me-2">Gerenciar eventos</a>
+        <a asp-area="Admin" asp-controller="Relatorios" asp-action="Index" class="btn btn-outline-primary btn-lg">Relatórios</a>
+    }
+    else
+    {
+        <a asp-area="Participante" asp-controller="Eventos" asp-action="Index" class="btn btn-primary btn-lg me-2">Ver eventos</a>
+        <a asp-area="Participante" asp-controller="Inscricoes" asp-action="Index" class="btn btn-outline-primary btn-lg me-2">Minhas inscrições</a>
+        <a asp-area="Participante" asp-controller="Historico" asp-action="Index" class="btn btn-outline-secondary btn-lg">Meu histórico</a>
+    }
 </div>
